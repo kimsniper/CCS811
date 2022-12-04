@@ -5,7 +5,7 @@ ESP-IDF template used for this project: https://github.com/espressif/esp-idf/tre
 
 ## Overview
 
-This example demonstrates usage of CCS811 for reading gas sensor values.
+This example demonstrates usage of CCS811 for reading eCO2 & TVOC values.
 
 ### Hardware Required
 
