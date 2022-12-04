@@ -38,7 +38,6 @@ int16_t ccs811_i2c_read_status(uint8_t *sts)
 {
     uint8_t reg = REG_STATUS;
     int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, sts, 1);
-    printf("ccs811_i2c_read_status: %d", *sts);
     return err;
 }
 
@@ -111,7 +110,6 @@ int16_t ccs811_i2c_write_drive_mode(ccs811_drv_mode_t drv_mode)
     int16_t err = ccs811_i2c_read_meas_mode(&meas_mode);
     data[0] = reg;
     data[1] = (meas_mode & 0x0F) | (drv_mode << 4);
-    printf("data[1]: %d", data[1]);
     err += ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
     return err;
 }
@@ -183,9 +181,6 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
         //ccs811_error_decode(data[5]);
         return data[5];
     }    
-
-    if(!(data[4] & (1<<3))) /* Check if new data is ready */
-        return CCS811_ERR;
    
     alg_data->eco2 = (data[0] << 8) | data[1];
     alg_data->tvoc = (data[2] << 8) | data[3];
@@ -193,26 +188,45 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
     return err;
 }
 
-int16_t ccs811_i2c_read_env_data(ccs811_env_data_t *env_data)
+int16_t ccs811_i2c_write_env_data(ccs811_env_data_t *env_data)
 {
     uint8_t reg = REG_ENV_DATA;
     uint8_t data[4];
     int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));    
 
-    uint16_t hum_16bit = (data[0] << 8) | data[1];
-    uint16_t temp_16bit = (data[2] << 8) | data[3];
+    uint16_t hum_16bit;
+    uint16_t temp_16bit;
     float init_mul = 128;
+
+    env_data->temperature += 25;
 
     for(int i=15; i>=0;i--)
     {
         init_mul /= 2;
         if(temp_16bit & (1 << i))
-            env_data->temperature += init_mul;
+            temp += init_mul;
         if(hum_16bit & (1 << i))
-            env_data->humidity += init_mul;
+            hum += init_mul;
     }
 
-    env_data->temperature -= 25;
+    while()
+    {
+        init_mul /= 2;
+    }
+
+    data[0]
+    
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+}
+
+int16_t ccs811_i2c_read_raw_data(ccs811_raw_t *raw_data)
+{
+    uint8_t reg = REG_RAW_DATA;
+    uint8_t data[2];
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data)); 
+   
+    raw_data->sens_amp = data[0] >> 2;
+    raw_data->sens_volt = ((data[0] & 0x03) << 8) | data[1];
 
     return err;
 }
@@ -234,7 +248,7 @@ int16_t ccs811_i2c_reset()
     uint8_t reg = REG_SW_RESET;
     uint8_t data[5] = {reg, RESET_SEQ_VAL_1, RESET_SEQ_VAL_2, RESET_SEQ_VAL_3, RESET_SEQ_VAL_4};
     
-    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));;
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
 }
 
 int16_t ccs811_i2c_read_hw_id(uint8_t *id)

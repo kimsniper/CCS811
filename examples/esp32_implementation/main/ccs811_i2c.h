@@ -86,6 +86,11 @@ typedef struct{
     uint16_t V_RNTC;   
 } ccs811_ntc_t;
 
+typedef struct{
+    uint16_t sens_volt;
+    uint8_t sens_amp;   
+} ccs811_raw_t;
+
 /**
  * @brief CCS811 I2C slave address
  */
@@ -150,11 +155,11 @@ int16_t ccs811_i2c_read_status(uint8_t *sts);
 
 int16_t ccs811_i2c_read_meas_mode(uint8_t *meas_mode);
 
-int16_t ccs811_i2c_start_app();
-
 int8_t ccs811_i2c_fw_mode();
 
 int8_t ccs811_i2c_fw_app_valid();
+
+int16_t ccs811_i2c_start_app();
 
 int8_t ccs811_i2c_data_ready();
 
@@ -173,6 +178,8 @@ void ccs811_error_decode(uint8_t error);
 int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data);
 
 int16_t ccs811_i2c_read_env_data(ccs811_env_data_t *env_data);
+
+int16_t ccs811_i2c_read_raw_data(ccs811_raw_t *raw_data);
 
 int16_t ccs811_i2c_read_ntc(ccs811_ntc_t *ntc);
 

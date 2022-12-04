@@ -74,35 +74,28 @@ void app_main(void)
     err += ccs811_i2c_write_drive_mode(DRV_MODE_CONST_POWER_IAQ);
     ESP_LOGI(TAG, "Drive mode setting %s", err == ESP_OK ? "successful" : "failed");
 
-    uint8_t cfg;
-    ccs811_i2c_read_meas_mode(&cfg);
-    ESP_LOGW(TAG, "meas_mode: %d", cfg);
-
-    //ccs811_env_data_t val;
-    //ccs811_i2c_read_env_data(&val);
-    //ESP_LOGW(TAG, "hum: %.2f, temp: %.2f", val.humidity, val.temperature);
-
     if (err == CCS811_OK)
     {
         ESP_LOGI(TAG, "CCS811 initialization successful");
+        ESP_LOGI(TAG, "Waiting for new data. . . .");
         ccs811_alg_res_dt_t ccs811_dt;
+        ccs811_env_data_t env_data;
         while(1)
         {
             //Reading here
-            //while(!ccs811_i2c_data_ready()){
-            //    ESP_LOGE(TAG, "Dev not ready!");
-            //    ccs811_i2c_hal_ms_delay(1);
-            //}
-                
+            while(!ccs811_i2c_data_ready())
+                ccs811_i2c_hal_ms_delay(1);
+               
             if(ccs811_i2c_read_alg_result_data(&ccs811_dt) == CCS811_OK)
-            {
-                ESP_LOGI(TAG, "eCO2: %d ppm", ccs811_dt.eco2);
-                ESP_LOGI(TAG, "TVOC: %d ppb", ccs811_dt.tvoc);
-            }
-            else{
-                ESP_LOGE(TAG, "Error reading data!");
-            }
-            
+                ESP_LOGI(TAG, "eCO2: %d ppm, TVOC: %d ppb", ccs811_dt.eco2, ccs811_dt.tvoc);
+            else
+                ESP_LOGE(TAG, "Error reading alg result data!");
+/*
+            if(ccs811_i2c_read_env_data(&env_data) == CCS811_OK)
+                ESP_LOGW(TAG, "hum: %.2f, temp: %.2f", env_data.humidity, env_data.temperature);
+            else
+                ESP_LOGE(TAG, "Error reading env data!");  
+*/
             ccs811_i2c_hal_ms_delay(1000);
         }
     }
