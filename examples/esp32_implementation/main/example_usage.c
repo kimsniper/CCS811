@@ -80,6 +80,10 @@ void app_main(void)
         ESP_LOGI(TAG, "Waiting for new data. . . .");
         ccs811_alg_res_dt_t ccs811_dt;
         ccs811_env_data_t env_data;
+        env_data.temperature = 23.5;
+        env_data.humidity = 48.5;
+        ccs811_i2c_write_env_data(env_data);
+
         while(1)
         {
             //Reading here
@@ -90,12 +94,7 @@ void app_main(void)
                 ESP_LOGI(TAG, "eCO2: %d ppm, TVOC: %d ppb", ccs811_dt.eco2, ccs811_dt.tvoc);
             else
                 ESP_LOGE(TAG, "Error reading alg result data!");
-/*
-            if(ccs811_i2c_read_env_data(&env_data) == CCS811_OK)
-                ESP_LOGW(TAG, "hum: %.2f, temp: %.2f", env_data.humidity, env_data.temperature);
-            else
-                ESP_LOGE(TAG, "Error reading env data!");  
-*/
+
             ccs811_i2c_hal_ms_delay(1000);
         }
     }

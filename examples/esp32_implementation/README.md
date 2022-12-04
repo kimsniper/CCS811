@@ -36,5 +36,30 @@ See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/l
 ## Example Output
 
 ```bash
+I (322) example_usage: Hardware id: 0x81
+I (332) example_usage: Hardware version: 0x12
+I (332) example_usage: Boot version: 1.0.0
+I (342) example_usage: App version: 1.1.0
+I (572) example_usage: Drive mode setting successful
+I (572) example_usage: CCS811 initialization successful
+I (572) example_usage: Waiting for new data. . . .
+I (2552) example_usage: eCO2: 0 ppm, TVOC: 0 ppb
+I (3552) example_usage: eCO2: 0 ppm, TVOC: 0 ppb
+I (4552) example_usage: eCO2: 0 ppm, TVOC: 0 ppb
+I (5552) example_usage: eCO2: 400 ppm, TVOC: 0 ppb
+I (6552) example_usage: eCO2: 406 ppm, TVOC: 0 ppb
+I (7552) example_usage: eCO2: 406 ppm, TVOC: 0 ppb
+I (8552) example_usage: eCO2: 409 ppm, TVOC: 1 ppb
+I (9552) example_usage: eCO2: 409 ppm, TVOC: 1 ppb
+I (10552) example_usage: eCO2: 406 ppm, TVOC: 0 ppb
+I (11552) example_usage: eCO2: 409 ppm, TVOC: 1 ppb
+I (12552) example_usage: eCO2: 414 ppm, TVOC: 2 ppb
+I (13552) example_usage: eCO2: 409 ppm, TVOC: 1 ppb
+I (14552) example_usage: eCO2: 409 ppm, TVOC: 1 ppb
+I (15552) example_usage: eCO2: 414 ppm, TVOC: 2 ppb
+I (16552) example_usage: eCO2: 414 ppm, TVOC: 2 ppb
+I (17552) example_usage: eCO2: 414 ppm, TVOC: 2 ppb
+I (18552) example_usage: eCO2: 417 ppm, TVOC: 2 ppb
+I (19552) example_usage: eCO2: 426 ppm, TVOC: 3 ppb
 
 ```
