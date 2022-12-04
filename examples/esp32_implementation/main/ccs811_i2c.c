@@ -177,25 +177,24 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
 
 int16_t ccs811_i2c_read_env_data(ccs811_env_data_t *env_data)
 {
-    uint8_t reg = REG_ALG_RESULT_DATA;
+    uint8_t reg = REG_ENV_DATA;
     uint8_t data[4];
-    float init_mul = 64;
-    uint16_t temp_16bit, hum_16bit;
     int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));    
-    data[0] = 0x64;
-    data[1] = 0x00;
-    data[2] = 0x64;
-    data[3] = 0x00;
-    hum_16bit = (data[0] << 8) | data[1];
-    temp_16bit = (data[2] << 8) | data[3];
 
-    for(int i=1; i<=16;i++)
+    uint16_t hum_16bit = (data[0] << 8) | data[1];
+    uint16_t temp_16bit = (data[2] << 8) | data[3];
+    float init_mul = 128;
+
+    for(int i=15; i>=0;i--)
     {
-        if(temp_16bit & (1 << (16-i)))
-            env_data->temperature += init_mul / i;
-        if(hum_16bit & (1 << (16-i)))
-            env_data->humidity += init_mul / i;
+        init_mul /= 2;
+        if(temp_16bit & (1 << i))
+            env_data->temperature += init_mul;
+        if(hum_16bit & (1 << i))
+            env_data->humidity += init_mul;
     }
+
+    env_data->temperature -= 25;
 
     return err;
 }

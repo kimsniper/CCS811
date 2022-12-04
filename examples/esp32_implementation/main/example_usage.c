@@ -62,13 +62,15 @@ void app_main(void)
     err += ccs811_i2c_write_drive_mode(DRV_MODE_CONST_POWER_IAQ);
     ESP_LOGI(TAG, "Drive mode setting %s", err == ESP_OK ? "successful" : "failed");
 
+    ccs811_i2c_start_app();
+
     uint8_t cfg;
     ccs811_i2c_read_meas_mode(&cfg);
     ESP_LOGW(TAG, "meas_mode: %d", cfg);
 
-    ccs811_env_data_t val;
-    ccs811_i2c_read_env_data(&val);
-    ESP_LOGW(TAG, "hum: %.2f, temp: %.2f", val.humidity, val.temperature);
+    //ccs811_env_data_t val;
+    //ccs811_i2c_read_env_data(&val);
+    //ESP_LOGW(TAG, "hum: %.2f, temp: %.2f", val.humidity, val.temperature);
 
     if (err == CCS811_OK)
     {
