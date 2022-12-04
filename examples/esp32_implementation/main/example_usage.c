@@ -13,56 +13,66 @@ static const char *TAG = "example_usage";
 
 void app_main(void)
 {
-    esp_err_t err = CCS811_OK;
+    esp_err_t err;
     uint8_t id = 0, ver, boot_version[3], app_version[3];
 
     ccs811_i2c_hal_init();
 
-    err = ccs811_i2c_reset();
-    if(err != CCS811_OK) 
-        ESP_LOGE(TAG, "Error resetting the device!");
-
-    ccs811_i2c_hal_ms_delay(100);
-    if(err != CCS811_OK) 
-        ESP_LOGE(TAG, "Unable to start app!");
-
-    err += ccs811_i2c_read_hw_id(&id);
+    err = ccs811_i2c_read_hw_id(&id);
     if(err == ESP_OK){
         ESP_LOGI(TAG, "Hardware id: 0x%02x", id);
     }
     else{
         ESP_LOGE(TAG, "Unable to read hardware id!");
+        return;
     }
 
-    err += ccs811_i2c_read_hw_version(&ver);
+    err = ccs811_i2c_read_hw_version(&ver);
     if(err == ESP_OK){
         ESP_LOGI(TAG, "Hardware version: 0x%02x", ver);
     }
     else{
         ESP_LOGE(TAG, "Unable to read hardware version!");
+        return;
     }
 
-    err += ccs811_i2c_read_boot_version(boot_version);
+    err = ccs811_i2c_read_boot_version(boot_version);
     if(err == ESP_OK){
         ESP_LOGI(TAG, "Boot version: %d.%d.%d", boot_version[0],boot_version[1],boot_version[2]);
     }
     else{
         ESP_LOGE(TAG, "Unable to read boot version!");
+        return;
     }
 
-    err += ccs811_i2c_read_app_version(app_version);
+    err = ccs811_i2c_read_app_version(app_version);
     if(err == ESP_OK){
         ESP_LOGI(TAG, "App version: %d.%d.%d", app_version[0],app_version[1],app_version[2]);
     }
     else{
         ESP_LOGE(TAG, "Unable to read app version!");
+        return;
+    }
+
+    err = ccs811_i2c_reset();
+    if(err != CCS811_OK) 
+    {
+        ESP_LOGE(TAG, "Error resetting the device!");
+        return;
+    }
+
+    ccs811_i2c_hal_ms_delay(100);
+
+    err = ccs811_i2c_start_app();
+    if(err != CCS811_OK) 
+    {
+        ESP_LOGE(TAG, "Unable to start app!");
+        return;
     }
 
     /* Device setting */
     err += ccs811_i2c_write_drive_mode(DRV_MODE_CONST_POWER_IAQ);
     ESP_LOGI(TAG, "Drive mode setting %s", err == ESP_OK ? "successful" : "failed");
-
-    ccs811_i2c_start_app();
 
     uint8_t cfg;
     ccs811_i2c_read_meas_mode(&cfg);
@@ -79,10 +89,10 @@ void app_main(void)
         while(1)
         {
             //Reading here
-            while(!ccs811_i2c_data_ready()){
-                ESP_LOGE(TAG, "Dev not ready!");
-                ccs811_i2c_hal_ms_delay(1);
-            }
+            //while(!ccs811_i2c_data_ready()){
+            //    ESP_LOGE(TAG, "Dev not ready!");
+            //    ccs811_i2c_hal_ms_delay(1);
+            //}
                 
             if(ccs811_i2c_read_alg_result_data(&ccs811_dt) == CCS811_OK)
             {

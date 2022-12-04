@@ -49,14 +49,6 @@ int16_t ccs811_i2c_read_meas_mode(uint8_t *meas_mode)
     return err;
 }
 
-int16_t ccs811_i2c_start_app()
-{
-    uint8_t reg = REG_APP_START;
-    uint8_t data[2] = {reg, 0};
-
-    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
-}
-
 int8_t ccs811_i2c_fw_mode()
 {
     uint8_t sts;
@@ -67,6 +59,29 @@ int8_t ccs811_i2c_fw_app_valid()
 {
     uint8_t sts;
     return ccs811_i2c_read_status(&sts) == CCS811_OK ? (sts & 0x10) >> 0x04 : CCS811_ERR;
+}
+
+int16_t ccs811_i2c_start_app()
+{
+    uint8_t reg = REG_APP_START;
+    uint8_t data[1] = {reg};
+    uint8_t sts;
+
+    if(ccs811_i2c_read_status(&sts) == CCS811_ERR)  
+        return CCS811_ERR;
+
+    if(!(sts & (1<<7)))
+    {
+        if(!(sts & (1<<4)))
+            return CCS811_ERR;
+    }
+
+    if(ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data)) == CCS811_ERR)
+        return CCS811_ERR;
+
+    ccs811_i2c_hal_ms_delay(100);
+
+    return ccs811_i2c_fw_mode() ? CCS811_OK : CCS811_ERR;
 }
 
 int8_t ccs811_i2c_data_ready()
@@ -165,10 +180,13 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
     if(data[5]) 
     {
         /* Uncomment this to decode and print error */
-        ccs811_error_decode(data[5]);
+        //ccs811_error_decode(data[5]);
         return data[5];
-    }        
+    }    
 
+    if(!(data[4] & (1<<3))) /* Check if new data is ready */
+        return CCS811_ERR;
+   
     alg_data->eco2 = (data[0] << 8) | data[1];
     alg_data->tvoc = (data[2] << 8) | data[3];
 
