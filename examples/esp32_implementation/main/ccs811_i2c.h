@@ -66,6 +66,12 @@ typedef struct{
 } ccs811_int_pin_t;
 
 typedef struct{
+    uint16_t co2_ltm_thr;
+    uint16_t co2_mth_thr;
+    uint8_t hysteresis;
+} ccs811_threshold_t;
+
+typedef struct{
     uint16_t eco2;
     uint16_t tvoc;
 } ccs811_alg_res_dt_t;
@@ -74,6 +80,11 @@ typedef struct{
     float humidity;
     float temperature;   
 } ccs811_env_data_t;
+
+typedef struct{
+    uint16_t V_RREF;
+    uint16_t V_RNTC;   
+} ccs811_ntc_t;
 
 /**
  * @brief CCS811 I2C slave address
@@ -155,11 +166,15 @@ int16_t ccs811_i2c_write_drive_mode(ccs811_drv_mode_t drv_mode);
 
 int16_t ccs811_i2c_intpin_init(ccs811_int_pin_t intpin);
 
+int16_t ccs811_i2c_write_threshold(ccs811_threshold_t val);
+
 void ccs811_error_decode(uint8_t error);
 
 int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data);
 
 int16_t ccs811_i2c_read_env_data(ccs811_env_data_t *env_data);
+
+int16_t ccs811_i2c_read_ntc(ccs811_ntc_t *ntc);
 
 int16_t ccs811_i2c_reset();
 

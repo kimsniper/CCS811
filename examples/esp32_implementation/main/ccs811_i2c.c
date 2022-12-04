@@ -112,6 +112,21 @@ int16_t ccs811_i2c_intpin_init(ccs811_int_pin_t intpin)
     return err;
 }
 
+int16_t ccs811_i2c_write_threshold(ccs811_threshold_t val)
+{
+    uint8_t reg = REG_THRESHOLDS;
+    uint8_t data[6];
+
+    data[0] = reg;
+    data[1] = val.co2_ltm_thr >> 8;
+    data[2] = val.co2_ltm_thr & 0xFF;
+    data[3] = val.co2_mth_thr >> 8;
+    data[4] = val.co2_mth_thr & 0xFF;
+    data[5] = val.hysteresis;
+
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+}
+
 void ccs811_error_decode(uint8_t error){
 
     if(error & WRITE_REG_INVALID_SHIFT)
@@ -181,6 +196,18 @@ int16_t ccs811_i2c_read_env_data(ccs811_env_data_t *env_data)
         if(hum_16bit & (1 << (16-i)))
             env_data->humidity += init_mul / i;
     }
+
+    return err;
+}
+
+int16_t ccs811_i2c_read_ntc(ccs811_ntc_t *ntc)
+{
+    uint8_t reg = REG_NTC;
+    uint8_t data[4];
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));    
+
+    ntc->V_RREF = (data[0] << 8) | data[1];
+    ntc->V_RNTC = (data[2] << 8) | data[3];
 
     return err;
 }
