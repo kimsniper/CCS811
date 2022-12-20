@@ -75,7 +75,7 @@ int16_t ccs811_i2c_start_app()
             return CCS811_ERR;
     }
 
-    if(ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data)) == CCS811_ERR)
+    if(ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 1) == CCS811_ERR)
         return CCS811_ERR;
 
     ccs811_i2c_hal_ms_delay(100);
@@ -110,7 +110,7 @@ int16_t ccs811_i2c_write_drive_mode(ccs811_drv_mode_t drv_mode)
     int16_t err = ccs811_i2c_read_meas_mode(&meas_mode);
     data[0] = reg;
     data[1] = (meas_mode & 0x0F) | (drv_mode << 4);
-    err += ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+    err += ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 2);
     return err;
 }
 
@@ -121,7 +121,7 @@ int16_t ccs811_i2c_intpin_init(ccs811_int_pin_t intpin)
     int16_t err = ccs811_i2c_read_meas_mode(&meas_mode);
     data[0] = reg;
     data[1] = (meas_mode & 0xF3) | (intpin.datardy << 3) | (intpin.thresh << 2);
-    err += ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+    err += ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 2);
     return err;
 }
 
@@ -137,7 +137,7 @@ int16_t ccs811_i2c_write_threshold(ccs811_threshold_t val)
     data[4] = val.co2_mth_thr & 0xFF;
     data[5] = val.hysteresis;
 
-    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 6);
 }
 
 void ccs811_error_decode(uint8_t error){
@@ -173,7 +173,7 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
 {
     uint8_t reg = REG_ALG_RESULT_DATA;
     uint8_t data[6];
-    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, 6);
 
     if(data[5]) 
     {
@@ -220,14 +220,14 @@ int16_t ccs811_i2c_write_env_data(ccs811_env_data_t env_data)
     data[3] = temp_16bit >> 8;
     data[4] = temp_16bit & 0xFF;
     
-    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 5);
 }
 
 int16_t ccs811_i2c_read_raw_data(ccs811_raw_t *raw_data)
 {
     uint8_t reg = REG_RAW_DATA;
     uint8_t data[2];
-    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data)); 
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, 2); 
    
     raw_data->sens_amp = data[0] >> 2;
     raw_data->sens_volt = ((data[0] & 0x03) << 8) | data[1];
@@ -239,7 +239,7 @@ int16_t ccs811_i2c_read_ntc(ccs811_ntc_t *ntc)
 {
     uint8_t reg = REG_NTC;
     uint8_t data[4];
-    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));    
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, 4);    
 
     ntc->V_RREF = (data[0] << 8) | data[1];
     ntc->V_RNTC = (data[2] << 8) | data[3];
@@ -252,7 +252,7 @@ int16_t ccs811_i2c_reset()
     uint8_t reg = REG_SW_RESET;
     uint8_t data[5] = {reg, RESET_SEQ_VAL_1, RESET_SEQ_VAL_2, RESET_SEQ_VAL_3, RESET_SEQ_VAL_4};
     
-    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, sizeof(data));
+    return ccs811_i2c_hal_write(I2C_ADDRESS_CCS811, data, 5);
 }
 
 int16_t ccs811_i2c_read_hw_id(uint8_t *id)
@@ -271,7 +271,7 @@ int16_t ccs811_i2c_read_boot_version(uint8_t *ver)
 {
     uint8_t reg = REG_FW_BOOT_VERSION;
     uint8_t data[2];
-    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, 2);
 
     ver[0] = data[0] >> 4;
     ver[1] = data[0] & 0x0F;
@@ -283,7 +283,7 @@ int16_t ccs811_i2c_read_app_version(uint8_t *ver)
 {
     uint8_t reg = REG_FW_APP_VERSION;
     uint8_t data[2];
-    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, sizeof(data));
+    int16_t err = ccs811_i2c_hal_read(I2C_ADDRESS_CCS811, &reg, data, 2);
     ver[0] = data[0] >> 4;
     ver[1] = data[0] & 0x0F;
     ver[2] = data[1];
