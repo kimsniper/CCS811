@@ -177,8 +177,7 @@ int16_t ccs811_i2c_read_alg_result_data(ccs811_alg_res_dt_t *alg_data)
 
     if(data[5]) 
     {
-        /* Uncomment this to decode and print error */
-        //ccs811_error_decode(data[5]);
+        ccs811_error_decode(data[5]);
         return data[5];
     }    
    

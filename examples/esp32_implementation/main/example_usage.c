@@ -79,10 +79,6 @@ void app_main(void)
         ESP_LOGI(TAG, "CCS811 initialization successful");
         ESP_LOGI(TAG, "Waiting for new data. . . .");
         ccs811_alg_res_dt_t ccs811_dt;
-        ccs811_env_data_t env_data;
-        env_data.temperature = 23.5;
-        env_data.humidity = 48.5;
-        ccs811_i2c_write_env_data(env_data);
 
         while(1)
         {
