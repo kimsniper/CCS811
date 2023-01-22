@@ -142,29 +142,30 @@ int16_t ccs811_i2c_write_threshold(ccs811_threshold_t val)
 
 void ccs811_error_decode(uint8_t error){
 
+    printf("DEVICE ERROR: ");
     if(error & WRITE_REG_INVALID_SHIFT)
     {
-        printf("\nWRITE_REG_INVALID");
+        printf("WRITE_REG_INVALID");
     }
     if(error & READ_REG_INVALID_SHIFT)
     {
-        printf("\nREAD_REG_INVALID");
+        printf("READ_REG_INVALID");
     }
     if(error & MEASMODE_INVALID_SHIFT)
     {
-        printf("\nMEASMODE_INVALID");
+        printf("MEASMODE_INVALID");
     }
     if(error & MAX_RESISTANCE_SHIFT)
     {
-        printf("\nMAX_RESISTANCE");
+        printf("MAX_RESISTANCE");
     }
     if(error & HEATER_FAULT_SHIFT)
     {
-        printf("\nHEATER_FAULT");
+        printf("HEATER_FAULT");
     }
     if(error & HEATER_SUPPLY_SHIFT)
     {
-        printf("\nHEATER_SUPPLY");
+        printf("HEATER_SUPPLY");
     }
     printf("\n");
 }
